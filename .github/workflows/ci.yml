@@ -1,0 +1,58 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # Джоба для вывода OK и базовой информации
+  hello-world:
+    name: Hello World
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Print OK message
+        run: echo "✅ OK - Everything is working!"
+        
+      - name: Show environment info
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+
+  # Джоба для проверки shell скриптов
+  shellcheck:
+    name: Shell Script Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+        
+      - name: Find and check shell scripts
+        run: |
+          echo "🔍 Looking for shell scripts..."
+          find . -name "*.sh" -type f | while read file; do
+            if [ -f "$file" ]; then
+              echo "📝 Checking: $file"
+              shellcheck "$file" || echo "❌ Issues found in $file"
+            fi
+          done
+          
+      - name: Check specific script (пример)
+        run: |
+          # Если у вас есть конкретный скрипт для проверки
+          if [ -f "./scripts/my-script.sh" ]; then
+            echo "🔍 Checking my-script.sh"
+            shellcheck "./scripts/my-script.sh"
+          else
+            echo "ℹ️  No specific script found, skipping"
+          fi
