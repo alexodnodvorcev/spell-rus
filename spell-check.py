@@ -103,6 +103,8 @@ def extract_words_with_positions(text: str) -> List[Tuple[str, int, int, int, in
                 continue
             if re.match(r'[a-zA-Z]', word):
                 continue
+            if re.match(r'\-[a-zA-Z]', word):
+                continue
 
             words.append((word.lower(), line_num, start_col,
                           start_global, end_global))
